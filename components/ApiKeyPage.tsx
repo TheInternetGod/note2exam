@@ -174,11 +174,11 @@ const ApiKeyPage: React.FC<ApiKeyPageProps> = ({ onBack }) => {
                         </li>
                         <li className="flex gap-3 items-start">
                              <span className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 shrink-0 mt-0.5">2</span>
-                             <p className="text-sm text-slate-600">Create a key. To get more keys, sign in with a different Google account and repeat.</p>
+                             <p className="text-sm text-slate-600">Click "Get API key" and copy the key; if one is not present, create one.</p>
                         </li>
                         <li className="flex gap-3 items-start">
                              <span className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500 shrink-0 mt-0.5">3</span>
-                             <p className="text-sm text-slate-600">Paste them above separated by commas: <code>Key1, Key2, Key3</code></p>
+                             <p className="text-sm text-slate-600">Copy the key, paste it here, and click save.</p>
                         </li>
                     </ul>
                 </div>
