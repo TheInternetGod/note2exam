@@ -136,7 +136,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onBack }) => {
                         <Globe className="w-4 h-4" /> Visit Website
                     </button>
                     <a 
-                        href="mailto:support@note2exam.com"
+                        href="mailto:kd357611@gmail.com"
                         className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors"
                     >
                         <Mail className="w-4 h-4" /> Contact Support
