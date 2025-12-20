@@ -1,0 +1,5 @@
+{
+  "name": "Note2Exam",
+  "description": "A sophisticated AI-powered SaaS platform that converts study materials into professional exam-style tests using Gemini 2.5.",
+  "requestFramePermissions": []
+}
