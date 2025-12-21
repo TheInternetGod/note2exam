@@ -10,7 +10,7 @@ Note2Exam is a sophisticated SaaS-grade platform that leverages Google's advance
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/08420205-72fd-4a90-b3bf-c17e0c18769e" width="450" alt="Landing Page">
-  <img src="https://github.com/user-attachments/assets/bf191213-884b-44d0-83de-72aa5a240b98" width="450" alt="CBT Exam Window">
+  <img src="https://github.com/user-attachments/assets/d565f34e-9e41-4d9c-acdd-868ceccedf1f" width="450" alt="CBT Exam Window">
 </p>
 
 ---
