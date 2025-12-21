@@ -95,6 +95,8 @@ You can deploy this project to **Vercel** (recommended), Netlify, or any static 
     *   Expand the "Environment Variables" section.
     *   Key: `API_KEY` (or `VITE_API_KEY`)
     *   Value: `Paste your Google Gemini API Key here`
+    *   Multi-Keys: `You can add multiple API keys separated by commas.`
+    *   Example: `API_KEY or VITE_API_KEY = key1,key2,key3`
 5.  **Deploy:** Click **Deploy**. Vercel will build the app and provide a live URL within seconds.
 
 ### Deploy to Netlify/Others
