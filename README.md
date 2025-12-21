@@ -95,6 +95,15 @@ The process is identical. Just ensure you add the `API_KEY` in the hosting platf
 
 ---
 
+## Screenshots
+
+<img width="1365" height="638" alt="img1" src="https://github.com/user-attachments/assets/91065309-4847-4234-8411-7577dd7a8c9d" />
+<img width="1365" height="643" alt="img2" src="https://github.com/user-attachments/assets/8459399a-9adb-4bf8-8d5d-49ba7251bbc0" />
+<img width="1366" height="768" alt="img3" src="https://github.com/user-attachments/assets/bb735278-d510-45c2-bace-637f5c1faf09" />
+<img width="1365" height="637" alt="img4" src="https://github.com/user-attachments/assets/bb3c4ab7-60fe-4bb7-b8ae-fc502cba2dd2" />
+
+---
+
 ## 🛡️ License
 
 This project is open-source and available for educational purposes.
