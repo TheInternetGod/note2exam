@@ -6,9 +6,7 @@ Note2Exam is a sophisticated SaaS-grade platform that leverages Google's advance
 
 🚀 **Live Demo:** [https://note2exam.vercel.app](https://note2exam.vercel.app)
 
----
-
-# 📸 Screenshots
+** 📸 Screenshots
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/08420205-72fd-4a90-b3bf-c17e0c18769e" width="450" alt="Landing Page">
