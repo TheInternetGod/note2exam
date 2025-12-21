@@ -13,22 +13,35 @@ export const getUserApiKey = () => localStorage.getItem(USER_API_KEY_STORAGE);
 export const hasUserApiKey = () => !!localStorage.getItem(USER_API_KEY_STORAGE);
 
 /**
- * Helper function to wait for a specific amount of time (Retry Backoff)
+ * Validates API Key(s) by making a lightweight test call
  */
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+export const validateApiKey = async (apiKeyString: string): Promise<boolean> => {
+  const keys = apiKeyString.split(',').map(k => k.trim()).filter(k => k.length > 0);
+  if (keys.length === 0) return false;
 
-/**
- * Helper to securely retrieve the Gemini API Key(s)
- * Prioritizes User Key -> System Env Key
- * Returns a raw string (potentially comma-separated)
- */
-const getApiKey = (): string | undefined => {
-  const userKey = getUserApiKey();
-  if (userKey) return userKey;
+  const checkKey = async (key: string) => {
+    try {
+      const ai = new GoogleGenAI({ apiKey: key });
+      await ai.models.generateContent({
+        model: "gemini-1.5-flash",
+        contents: { parts: [{ text: "test" }] },
+        config: { maxOutputTokens: 1 }
+      });
+      return true;
+    } catch (error: any) {
+      const msg = error.message || '';
+      const status = error.status;
+      // 400: Invalid Argument (Key invalid)
+      // 403: Permission Denied (Key invalid or restricted)
+      if (msg.includes("API key not valid") || status === 400 || status === 403) {
+        return false;
+      }
+      return true; // Other errors (Quota, Server) mean the key is recognized
+    }
+  };
 
-  // In Vercel + Vite (with define plugin), process.env.API_KEY is replaced 
-  // with the actual environment variable value at build time.
-  return process.env.API_KEY;
+  const results = await Promise.all(keys.map(checkKey));
+  return results.every(r => r === true);
 };
 
 /**
@@ -158,18 +171,33 @@ export const generateExamContent = async (
   config: ExamConfig
 ): Promise<GeneratedExam> => {
   
-  const rawKeyString = getApiKey();
-  
-  if (!rawKeyString) {
-    console.error("API Key is missing.");
-    throw new Error("API Key is missing");
+  // 1. Build Unified Key List (User Keys + System Keys)
+  let apiKeys: string[] = [];
+
+  // Get User Keys first (High Priority)
+  const userKeyString = getUserApiKey();
+  if (userKeyString) {
+    const userKeys = userKeyString.split(',').map(k => k.trim()).filter(k => k.length > 0);
+    apiKeys.push(...userKeys);
   }
 
-  // Parse Multi-Keys (Handle comma separation)
-  const apiKeys = rawKeyString.split(',').map(k => k.trim()).filter(k => k.length > 0);
+  // Get System Keys (Fallback Priority)
+  // We use process.env.API_KEY because vite.config.ts polyfills it
+  // @ts-ignore
+  let systemKeyString = process.env.API_KEY;
+  
+  if (systemKeyString) {
+    // Also support comma-separated system keys if configured in env
+    const sysKeys = systemKeyString.split(',').map((k: string) => k.trim()).filter((k: string) => k.length > 0);
+    apiKeys.push(...sysKeys);
+  }
+
+  // Deduplicate keys
+  apiKeys = [...new Set(apiKeys)];
 
   if (apiKeys.length === 0) {
-    throw new Error("No valid API keys found");
+    console.error("No API Keys available (Neither User nor System).");
+    throw new Error("API Key is missing");
   }
 
   const sanitizedText = textInput.length > MAX_TEXT_CHARS 
@@ -195,7 +223,7 @@ export const generateExamContent = async (
   // Outer Loop: Iterate through Models (Quality Priority)
   for (const modelName of MODEL_CASCADE) {
     
-    // Inner Loop: Iterate through API Keys (Robustness Priority)
+    // Inner Loop: Iterate through Combined API Keys (User -> System)
     for (const apiKey of apiKeys) {
       try {
         console.log(`Attempting generation with model: ${modelName} using key ending in ...${apiKey.slice(-4)}`);
@@ -225,8 +253,7 @@ export const generateExamContent = async (
            continue;
         }
         
-        // If it's a prompt error (Safety filter, Bad Request unrelated to key), we might want to stop
-        // But for robustness, we often continue to the next model just in case.
+        // Non-retryable error (e.g. Safety Filter), try next model instead of next key
         continue;
       }
     }
