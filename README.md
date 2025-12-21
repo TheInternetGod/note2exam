@@ -6,7 +6,10 @@ Note2Exam is a sophisticated SaaS-grade platform that leverages Google's advance
 
 🚀 **Live Demo:** [https://note2exam.vercel.app](https://note2exam.vercel.app)
 
-<img width="1366" height="768" alt="img3" src="https://github.com/user-attachments/assets/bf191213-884b-44d0-83de-72aa5a240b98" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/08420205-72fd-4a90-b3bf-c17e0c18769e" width="450" alt="Landing Page">
+  <img src="https://github.com/user-attachments/assets/bf191213-884b-44d0-83de-72aa5a240b98" width="450" alt="CBT Exam Window">
+</p>
 
 ---
 
