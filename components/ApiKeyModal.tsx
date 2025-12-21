@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Key, CheckCircle, X, ExternalLink, ShieldCheck, AlertOctagon, ArrowRight } from 'lucide-react';
-import { saveUserApiKey, getUserApiKey, removeUserApiKey } from '../services/geminiService';
+import { Key, CheckCircle, X, ExternalLink, ShieldCheck, AlertOctagon, ArrowRight, Loader2 } from 'lucide-react';
+import { saveUserApiKey, getUserApiKey, removeUserApiKey, validateApiKey } from '../services/geminiService';
 
 const MotionDiv = motion.div as any;
 
@@ -16,6 +15,7 @@ interface ApiKeyModalProps {
 const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose, isErrorTriggered, isUserQuotaExceeded }) => {
   const [apiKey, setApiKey] = useState('');
   const [isSaved, setIsSaved] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -30,7 +30,7 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose, isErrorTrigg
     }
   }, [isOpen]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Multi-key validation
     const keys = apiKey.split(',').map(k => k.trim()).filter(k => k.length > 0);
     
@@ -39,16 +39,25 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose, isErrorTrigg
         return;
     }
 
-    const allValid = keys.every(k => k.startsWith('AIza'));
+    const allValidFormat = keys.every(k => k.startsWith('AIza'));
 
-    if (allValid) {
+    if (!allValidFormat) {
+      alert("Invalid API Key format. All keys should start with 'AIza'.");
+      return;
+    }
+
+    setIsVerifying(true);
+    const isValid = await validateApiKey(apiKey);
+    setIsVerifying(false);
+
+    if (isValid) {
       saveUserApiKey(apiKey);
       setIsSaved(true);
       setTimeout(() => {
         onClose();
       }, 800);
     } else {
-      alert("Invalid API Key format. All keys should start with 'AIza'.");
+      alert("Verification Failed: One or more provided keys are invalid. Please check for typos and try again.");
     }
   };
 
@@ -195,14 +204,16 @@ const ApiKeyModal: React.FC<ApiKeyModalProps> = ({ isOpen, onClose, isErrorTrigg
                 )}
                 <button 
                   onClick={handleSave}
-                  disabled={!apiKey}
+                  disabled={!apiKey || isVerifying}
                   className={`flex-1 py-3.5 rounded-xl font-bold text-sm shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
                     isSaved 
                     ? 'bg-green-500 text-white shadow-green-200 hover:bg-green-600 ring-2 ring-offset-2 ring-green-500' 
                     : 'bg-slate-900 text-white shadow-slate-200 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none'
                   }`}
                 >
-                  {isSaved ? 'Settings Saved' : (
+                  {isVerifying ? (
+                    <>Verifying... <Loader2 className="w-4 h-4 animate-spin" /></>
+                  ) : isSaved ? 'Settings Saved' : (
                     <>
                       Save API Key(s) <ArrowRight className="w-4 h-4" />
                     </>
