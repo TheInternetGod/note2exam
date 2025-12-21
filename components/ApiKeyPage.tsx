@@ -1,8 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Key, CheckCircle, ShieldCheck, ExternalLink, ArrowRight, Layers } from 'lucide-react';
-import { saveUserApiKey, getUserApiKey, removeUserApiKey } from '../services/geminiService';
+import { ArrowLeft, Key, CheckCircle, ShieldCheck, ExternalLink, ArrowRight, Layers, Loader2 } from 'lucide-react';
+import { saveUserApiKey, getUserApiKey, removeUserApiKey, validateApiKey } from '../services/geminiService';
 
 const MotionDiv = motion.div as any;
 
@@ -13,6 +12,7 @@ interface ApiKeyPageProps {
 const ApiKeyPage: React.FC<ApiKeyPageProps> = ({ onBack }) => {
   const [apiKey, setApiKey] = useState('');
   const [isSaved, setIsSaved] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     const existing = getUserApiKey();
@@ -22,7 +22,7 @@ const ApiKeyPage: React.FC<ApiKeyPageProps> = ({ onBack }) => {
     }
   }, []);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     // Multi-key validation: Split by comma, check if at least one is valid and all provided are valid format
     const keys = apiKey.split(',').map(k => k.trim()).filter(k => k.length > 0);
     
@@ -31,13 +31,22 @@ const ApiKeyPage: React.FC<ApiKeyPageProps> = ({ onBack }) => {
         return;
     }
 
-    const allValid = keys.every(k => k.startsWith('AIza'));
+    const allValidFormat = keys.every(k => k.startsWith('AIza'));
     
-    if (allValid) {
+    if (!allValidFormat) {
+      alert("Invalid API Key format. All keys should start with 'AIza'.");
+      return;
+    }
+
+    setIsVerifying(true);
+    const isValid = await validateApiKey(apiKey);
+    setIsVerifying(false);
+
+    if (isValid) {
       saveUserApiKey(apiKey); // Save the raw comma-separated string
       setIsSaved(true);
     } else {
-      alert("Invalid API Key format. All keys should start with 'AIza'.");
+      alert("Verification Failed: One or more provided keys are invalid. Please check for typos and try again.");
     }
   };
 
@@ -142,14 +151,16 @@ const ApiKeyPage: React.FC<ApiKeyPageProps> = ({ onBack }) => {
                         )}
                         <button 
                             onClick={handleSave}
-                            disabled={!apiKey}
+                            disabled={!apiKey || isVerifying}
                             className={`flex-1 py-4 rounded-xl font-bold text-sm shadow-lg transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${
                                 isSaved 
                                 ? 'bg-green-600 text-white shadow-green-200 hover:bg-green-700' 
                                 : 'bg-slate-900 text-white shadow-slate-200 hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none'
                             }`}
                         >
-                        {isSaved ? 'Update Keys' : (
+                        {isVerifying ? (
+                            <>Verifying... <Loader2 className="w-4 h-4 animate-spin" /></>
+                        ) : isSaved ? 'Update Keys' : (
                             <>
                             Save API Key(s) <ArrowRight className="w-4 h-4" />
                             </>
