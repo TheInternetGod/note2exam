@@ -6,6 +6,8 @@ Note2Exam is a sophisticated SaaS-grade platform that leverages Google's advance
 
 🚀 **Live Demo:** [https://note2exam.vercel.app](https://note2exam.vercel.app)
 
+<img width="1366" height="768" alt="img3" src="https://github.com/user-attachments/assets/bf191213-884b-44d0-83de-72aa5a240b98" />
+
 ---
 
 ## 🌟 Introduction
@@ -92,15 +94,6 @@ You can deploy this project to **Vercel** (recommended), Netlify, or any static 
 
 ### Deploy to Netlify/Others
 The process is identical. Just ensure you add the `API_KEY` in the hosting platform's Environment Variables settings before triggering the build.
-
----
-
-## Screenshots
-
-<img width="1365" height="638" alt="img1" src="https://github.com/user-attachments/assets/91065309-4847-4234-8411-7577dd7a8c9d" />
-<img width="1365" height="643" alt="img2" src="https://github.com/user-attachments/assets/8459399a-9adb-4bf8-8d5d-49ba7251bbc0" />
-<img width="1366" height="768" alt="img3" src="https://github.com/user-attachments/assets/bb735278-d510-45c2-bace-637f5c1faf09" />
-<img width="1365" height="637" alt="img4" src="https://github.com/user-attachments/assets/bb3c4ab7-60fe-4bb7-b8ae-fc502cba2dd2" />
 
 ---
 
