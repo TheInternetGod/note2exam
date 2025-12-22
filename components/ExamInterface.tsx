@@ -198,22 +198,30 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, onComplete }) => {
           </div>
         </div>
         <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Question Palette</h3>
-        <div className="grid grid-cols-2 gap-y-2 gap-x-1">
+        <div className="grid grid-cols-2 gap-y-3 gap-x-2">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded" />
-            <span className="text-[10px] font-bold text-slate-600 uppercase">Answered</span>
+            <div className="w-8 h-8 rounded bg-green-500 text-white flex items-center justify-center text-xs font-bold border-b-2 border-green-700 shadow-sm">
+              {stats.answered}
+            </div>
+            <span className="text-[10px] font-bold text-slate-600 leading-tight">Answered</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded" />
-            <span className="text-[10px] font-bold text-slate-600 uppercase">Not Answered</span>
+            <div className="w-8 h-8 rounded bg-red-500 text-white flex items-center justify-center text-xs font-bold border-b-2 border-red-700 shadow-sm">
+              {stats.notAnswered}
+            </div>
+            <span className="text-[10px] font-bold text-slate-600 leading-tight">Not Answered</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-slate-300 rounded" />
-            <span className="text-[10px] font-bold text-slate-600 uppercase">Not Visited</span>
+            <div className="w-8 h-8 rounded bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-bold border-b-2 border-slate-300 shadow-sm">
+              {stats.notVisited}
+            </div>
+            <span className="text-[10px] font-bold text-slate-600 leading-tight">Not Visited</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-violet-600 rounded" />
-            <span className="text-[10px] font-bold text-slate-600 uppercase">Marked</span>
+            <div className="w-8 h-8 rounded bg-violet-600 text-white flex items-center justify-center text-xs font-bold border-b-2 border-violet-800 shadow-sm">
+              {stats.marked}
+            </div>
+            <span className="text-[10px] font-bold text-slate-600 leading-tight">Marked For Review</span>
           </div>
         </div>
       </div>
@@ -227,8 +235,8 @@ const ExamInterface: React.FC<ExamInterfaceProps> = ({ exam, onComplete }) => {
             const isCurr = idx === currentQuestionIndex;
 
             let cls = "";
-            if (isFlag) cls = "bg-violet-600 text-white border-violet-800";
-            else if (isAns) cls = "bg-green-500 text-white border-green-700";
+            if (isAns) cls = "bg-green-500 text-white border-green-700";
+            else if (isFlag) cls = "bg-violet-600 text-white border-violet-800";
             else if (isVis) cls = "bg-red-500 text-white border-red-700";
             else cls = "bg-slate-200 text-slate-400 border-slate-300";
             
