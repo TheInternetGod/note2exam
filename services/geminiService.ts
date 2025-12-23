@@ -63,34 +63,125 @@ const parseMedia = (base64String: string) => {
   };
 };
 
-const getDifficultyInstructions = (difficulty: string) => {
-  const instructions = {
-    "Easy": "Questions should focus on basic facts and definitions found in the text. Language should be simple and direct. The length of questions and options should be concise.",
-    "Medium": "Questions should require conceptual understanding and application of knowledge. Focus on 'how' and 'why' rather than just 'what'. Options should include plausible distractors that test comprehension.",
-    "Hard": "Questions should involve complex reasoning, multi-step analysis, or synthesis of multiple concepts from the text. Use technical terminology and sophisticated academic language. Questions and options should be significantly longer and more detailed to challenge the candidate's deep mastery."
-  };
-  return instructions[difficulty as keyof typeof instructions] || instructions["Medium"];
-};
-
 const getCommonPrompt = (config: ExamConfig, sanitizedText: string) => {
+  let difficultyRules = "";
+  
+  if (config.difficulty === "Easy") {
+    difficultyRules = `
+    ----------------
+    EASY LEVEL RULES
+    ----------------
+    • Direct factual or formula-based questions are allowed.
+    • Single-step reasoning.
+    • No traps, no multi-statement formats.
+    • Target solve time: under 30 seconds.
+    `;
+  } else if (config.difficulty === "Medium") {
+    difficultyRules = `
+    ------------------
+    MEDIUM LEVEL RULES
+    ------------------
+    • Must require application of concepts.
+    • At least 2 logical steps.
+    • Scenario-based or contextual questions preferred.
+    • Distractors must include close conceptual traps.
+    • Target solve time: 45–90 seconds.
+    `;
+  } else {
+     difficultyRules = `
+    ----------------
+    HARD LEVEL RULES
+    ----------------
+    ⚠️ STRICTLY ENFORCE ALL CONDITIONS BELOW ⚠️
+
+    1. A hard question MUST NOT be solvable using:
+       - A single direct formula
+       - One-step recall
+       - Pure factual memory
+
+    2. A hard question MUST require:
+       - At least TWO independent reasoning steps
+       - OR verification of correctness across statements
+
+    3. HARD questions MUST use one or more of the following formats:
+       • Multiple-statement questions (e.g., Statement 1, 2, 3)
+       • “Which of the following is/are correct / incorrect”
+       • Assertion–Reason
+       • Data sufficiency
+       • Exception-based or rule-violation testing
+
+    4. If a question can be solved in under 30 seconds by a well-prepared candidate,
+       DISCARD it and regenerate.
+
+    5. If a question is short, its cognitive load MUST be high.
+       Short + direct = NOT HARD.
+
+    6. Before finalizing each HARD question, internally verify:
+       “Does this question test depth, exceptions, or conceptual synthesis?”
+       If NO → reject and regenerate.
+    `;
+  }
+
   return `
-    Act as a senior academic professor and expert exam setter. Generate a professional CBT exam based on the provided content.
+    ROLE:
+    You are the Senior Chief Examiner responsible for setting question papers for India’s toughest competitive examinations (RRB, Banking, SSC, CDS, UPSC, RBI Grade B, State PCS).
+
+    Your task is to generate a high-quality, exam-authentic question paper strictly aligned with the selected difficulty level: ${config.difficulty}.
+
+    ----------------------------------
+    CONTENT ANALYSIS RULES (MANDATORY)
+    ----------------------------------
+    1. Read the ENTIRE source material completely before generating any questions.
+    2. Do NOT generate questions sequentially or line-by-line.
+    3. Identify examinable concepts such as:
+       - Core definitions
+       - Exceptions and limitations
+       - Cause–effect relationships
+       - Conceptual linkages across sections
+    4. RANDOMIZE question order. Questions must be mixed from across the document.
+
+    ----------------------------------
+    GLOBAL QUESTION DESIGN RULES
+    ----------------------------------
+    • Do NOT repeat concepts.
+    • Use precise, formal exam language only.
+    • Each question must test understanding, not memorization alone.
+    • Each question must have EXACTLY 4 options.
+    • Distractors must be plausible and close to the correct answer.
+    • The correct option must be unambiguously correct.
+    • Output must strictly follow valid JSON schema.
+    • **Title Generation**: Generate a professional title based on the content topic (e.g., "Indian Polity - Fundamental Rights", "Physics - Thermodynamics"). Do NOT include the difficulty level or exam names (like "SSC", "Clerk", "UPSC") in the title.
+
+    ----------------------------------
+    DIFFICULTY ENFORCEMENT (CRITICAL)
+    ----------------------------------
+
+    Apply the following rules STRICTLY based on the selected level.
+
+    ${difficultyRules}
+
+    -------------------------------
+    QUALITY SELF-CHECK (INTERNAL)
+    -------------------------------
+    Before outputting the final paper, internally ensure:
+    • Easy questions do not appear in Hard level.
+    • Formula-only questions are ABSENT in Hard level.
+    • Statement-based questions dominate Hard level.
+
+    ----------------------------------
+    OUTPUT REQUIREMENTS
+    ----------------------------------
+    • Total number of questions: ${config.questionCount}
+    • Provide detailed explanations:
+      - Explain WHY the correct option is correct
+      - Explain WHY each distractor is incorrect
+    • Output ONLY valid JSON.
+    • Do NOT include any extra text outside JSON.
     
-    CRITICAL SAFETY RULES:
-    - DO NOT generate questions that include hate speech, explicit language, sexual content, violence, or harassment.
-    - If the input content contains inappropriate language, REJECT it and generate a standard academic exam on ethics instead.
-    
-    Difficulty Configuration:
-    - Current Setting: ${config.difficulty}
-    - Guidelines: ${getDifficultyInstructions(config.difficulty)}
-    
-    Structural Requirements:
-    - Number of Questions: ${config.questionCount}
-    - Format: 4 options. Return pure text for each option. DO NOT include prefixes like "A)", "B)", "1.", etc. in the option strings.
-    - Rationales: Provide detailed educational explanations for the correct answers.
-    - Output: Strict JSON format matching the schema provided.
-    
-    Content Context:
+    CRITICAL SAFETY:
+    - If the input text contains hate speech, explicit violence, or sexual content, strictly refuse to generate related questions and instead generate a generic General Knowledge set about "Ethics in Public Service".
+
+    SOURCE MATERIAL:
     ${sanitizedText}
   `;
 };
