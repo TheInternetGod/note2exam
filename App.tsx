@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import LandingPage from './components/LandingPage';
 import Dashboard from './components/Dashboard';
@@ -18,6 +17,7 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<AppView>(AppView.LANDING);
   const [generatedExam, setGeneratedExam] = useState<GeneratedExam | null>(null);
   const [examResult, setExamResult] = useState<ExamResult | null>(null);
+  const [activeConfig, setActiveConfig] = useState<ExamConfig | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   
   // Quota Error State
@@ -64,6 +64,7 @@ const App: React.FC = () => {
   };
 
   const handleGenerateExam = async (text: string, image: string | null, pdf: string | null, config: ExamConfig) => {
+    setActiveConfig(config);
     localStorage.removeItem(PROGRESS_KEY);
     setCurrentView(AppView.LOADING);
     setIsUserQuotaError(false);
@@ -103,6 +104,7 @@ const App: React.FC = () => {
   const handleRestart = () => {
     setGeneratedExam(null);
     setExamResult(null);
+    setActiveConfig(null);
     setCurrentView(AppView.DASHBOARD);
     localStorage.removeItem(APP_STATE_KEY);
     localStorage.removeItem(PROGRESS_KEY);
@@ -135,7 +137,7 @@ const App: React.FC = () => {
         />
       )}
       
-      {currentView === AppView.LOADING && <LoadingScreen />}
+      {currentView === AppView.LOADING && <LoadingScreen config={activeConfig} />}
       
       {currentView === AppView.EXAM && generatedExam && (
         <ExamInterface 
