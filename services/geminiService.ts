@@ -192,7 +192,7 @@ const getCommonPrompt = (config: ExamConfig, sanitizedText: string) => {
 const generateWithGemini = async (
   apiKey: string,
   prompt: string,
-  imageInput: string | null,
+  imageInput: string[] | null, // CHANGED: Now accepts string array
   pdfInput: string | null,
   config: ExamConfig,
   modelName: string
@@ -201,9 +201,12 @@ const generateWithGemini = async (
   
   const parts: any[] = [{ text: prompt }];
 
-  if (imageInput) {
-    const { mimeType, data } = parseMedia(imageInput);
-    parts.push({ inlineData: { mimeType, data } });
+  // Handle Multiple Images
+  if (imageInput && imageInput.length > 0) {
+    imageInput.forEach(imgBase64 => {
+        const { mimeType, data } = parseMedia(imgBase64);
+        parts.push({ inlineData: { mimeType, data } });
+    });
   }
 
   if (pdfInput) {
@@ -257,7 +260,7 @@ const generateWithGemini = async (
  */
 export const generateExamContent = async (
   textInput: string,
-  imageInput: string | null,
+  imageInput: string[] | null, // CHANGED: Signature updated
   pdfInput: string | null,
   config: ExamConfig
 ): Promise<GeneratedExam> => {
