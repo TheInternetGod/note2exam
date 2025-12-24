@@ -248,7 +248,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onGenerate, onBack }) => {
                                 <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-sm group-hover:shadow-md">
                                     <Upload className="w-6 h-6 text-slate-400 group-hover:text-yellow-500 transition-colors" />
                                 </div>
-                                <p className="mb-2 text-sm text-slate-500"><span className="font-bold text-slate-700">Click to upload</span> or drag and drop</p>
+                                <p className="mb-2 text-sm text-slate-500"><span className="font-bold text-slate-700">Click to upload</span></p>
                                 <div className="flex flex-col items-center gap-1">
                                     <p className="text-xs text-slate-400 font-medium">PDF or Multiple Images</p>
                                     <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200">Max 10MB/File</span>
