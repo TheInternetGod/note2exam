@@ -63,14 +63,14 @@ const App: React.FC = () => {
     setCurrentView(AppView.ABOUT);
   };
 
-  const handleGenerateExam = async (text: string, image: string | null, pdf: string | null, config: ExamConfig) => {
+  const handleGenerateExam = async (text: string, images: string[] | null, pdf: string | null, config: ExamConfig) => {
     setActiveConfig(config);
     localStorage.removeItem(PROGRESS_KEY);
     setCurrentView(AppView.LOADING);
     setIsUserQuotaError(false);
 
     try {
-      const exam = await generateExamContent(text, image, pdf, config);
+      const exam = await generateExamContent(text, images, pdf, config);
       setGeneratedExam(exam);
       setCurrentView(AppView.EXAM);
     } catch (error: any) {
