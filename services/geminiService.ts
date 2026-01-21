@@ -306,7 +306,6 @@ export const generateExamContent = async (
   // 3. Gemini 2.5 Flash Lite (Lightweight Backup)
   // 4. Gemini 1.5 Flash (Ultimate Safety Net)
   const MODEL_CASCADE = [
-    "gemini-3-pro-preview",
     "gemini-3-flash-preview",
     "gemini-2.5-flash", 
     "gemini-2.5-flash-lite",
