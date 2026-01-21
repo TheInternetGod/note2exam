@@ -23,7 +23,7 @@ export const validateApiKey = async (apiKeyString: string): Promise<boolean> => 
     try {
       const ai = new GoogleGenAI({ apiKey: key });
       await ai.models.generateContent({
-        model: "gemini-3-flash-preview", // Updated to supported model
+        model: "gemini-1.5-flash",
         contents: { parts: [{ text: "test" }] },
         config: { maxOutputTokens: 1 }
       });
@@ -61,29 +61,6 @@ const parseMedia = (base64String: string) => {
     mimeType: "application/pdf", 
     data: base64String
   };
-};
-
-/**
- * Robust JSON Parser for AI Responses
- */
-const parseGeminiJson = (text: string) => {
-    try {
-        // Attempt 1: Clean parsing
-        const cleanText = text.replace(/```json\n?|```/g, '').trim();
-        return JSON.parse(cleanText);
-    } catch (e) {
-        // Attempt 2: Extract from curly braces
-        const start = text.indexOf('{');
-        const end = text.lastIndexOf('}');
-        if (start !== -1 && end !== -1) {
-            try {
-                return JSON.parse(text.substring(start, end + 1));
-            } catch (e2) {
-                console.error("JSON extraction failed", e2);
-            }
-        }
-        throw new Error("Failed to parse valid JSON from AI response");
-    }
 };
 
 const getCommonPrompt = (config: ExamConfig, sanitizedText: string) => {
@@ -215,7 +192,7 @@ const getCommonPrompt = (config: ExamConfig, sanitizedText: string) => {
 const generateWithGemini = async (
   apiKey: string,
   prompt: string,
-  imageInput: string[] | null,
+  imageInput: string[] | null, // CHANGED: Now accepts string array
   pdfInput: string | null,
   config: ExamConfig,
   modelName: string
@@ -268,7 +245,7 @@ const generateWithGemini = async (
   });
 
   if (response.text) {
-    const result = parseGeminiJson(response.text);
+    const result = JSON.parse(response.text);
     return {
       title: result.title || "Generated Exam",
       questions: result.questions.map((q: any, idx: number) => ({ ...q, id: idx + 1 })),
@@ -283,7 +260,7 @@ const generateWithGemini = async (
  */
 export const generateExamContent = async (
   textInput: string,
-  imageInput: string[] | null,
+  imageInput: string[] | null, // CHANGED: Signature updated
   pdfInput: string | null,
   config: ExamConfig
 ): Promise<GeneratedExam> => {
@@ -324,12 +301,11 @@ export const generateExamContent = async (
   const prompt = getCommonPrompt(config, sanitizedText);
 
   // Cascading Strategy: 
-  // 1. Gemini 3.0 Pro Preview (Top Priority - Most Capable)
-  // 2. Gemini 3.0 Flash Preview (Fast & Smart)
-  // 3. Gemini 2.5 Flash (Stable Backup)
-  // 4. Gemini 2.5 Flash Lite (Lightweight Backup)
+  // 1. Gemini 3.0 Flash Preview (Smartest/Fastest)
+  // 2. Gemini 2.5 Flash (Stable Backup)
+  // 3. Gemini 2.5 Flash Lite (Lightweight Backup)
+  // 4. Gemini 1.5 Flash (Ultimate Safety Net)
   const MODEL_CASCADE = [
-    "gemini-3-pro-preview",
     "gemini-3-flash-preview",
     "gemini-2.5-flash", 
     "gemini-2.5-flash-lite",
